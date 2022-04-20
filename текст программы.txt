@@ -1,0 +1,124 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#define M 200
+#define MA 400
+
+void menu () {
+	puts("HOW TO WORK : Make sure that you put the text, cipher1 and cipher2 in the file \"xaxaxa.txt\" through a new line.");
+	puts("Make sure that the file \"xaxaxa.txt\" is in the same folder as the program.");
+	puts("The result in the file \"vivod.txt\"");
+	puts("\n\nChoose what you want to do with the text ?\n1 - Encrypt\n2 - Encrypt?\n3 - Run the program");
+	getchar();
+	puts("Whatever");
+	getchar();
+}
+
+void chitau(char *te,char *co1,char *co2) {
+	FILE *text;
+	int i = 0;
+	if ((text = fopen("xaxaxa.txt", "r")) == NULL) {
+		printf("Cannot open file.\n");
+		exit(1);
+	}
+	fgets(te, M, text);
+	fgets(co1, M, text);
+	fgets(co2, M, text);
+	fclose(text);
+}
+
+void oba(char *te,char *tex) {
+	int j=0, m = strlen(te);
+	for (int i = 0; i < n; i++) {
+		if ((te[i] >= 'a') && (te[i] <= 'z')) {
+			tex[j] = te[i];
+			j++;
+		}
+		if ((te[i] >= 'A') && (te[i] <= 'Z')) {
+			tex[j] = te[i] - 'A' + 'a';
+			j++;
+		}
+		if ((te[i] >= 'à') && (te[i] <= 'ÿ')) {
+			tex[j] = te[i];
+			j++;
+		}
+		if ((te[i] >= 'À') && (te[i] <= 'ß')) {
+			tex[j] = te[i] - 'À' + 'à';
+			j++;
+		}
+	}
+	tex[j] = '\0';
+	free(te);
+}
+
+void polnie(char *co1, int n) {
+	int m = strlen(co1);
+	char *lol = NULL;
+	lol = (char*)malloc(m * sizeof(char));
+	if (co1[m - 1] == '\n')
+		co1[m - 1] = '\0';
+	if (lol != NULL) {
+		memcpy(lol, co1, m);
+		for (int i = 0; i < 2*n; i += m)
+			strncat(co1, lol, m);
+		free(lol);
+	}
+	else {
+		puts("Error of memory");
+		free(lol);
+		exit(1);
+	}
+}
+
+void znaki(char *zn, int n) {
+	for (int i = 0; i < n; i++)
+		zn[i] = '+';
+}
+
+int main() {
+	FILE *itog;
+	char *te = NULL, *tex = NULL, *co1 = NULL, *cox = NULL, *co2 = NULL, *zn = NULL;
+	int n,k=0;
+	te = (char*)malloc(M * sizeof(char));
+	tex = (char*)malloc(M * sizeof(char));
+	co1 = (char*)malloc(M * sizeof(char));
+	cox = (char*)malloc(M * sizeof(char));
+	co2 = (char*)malloc(MA * sizeof(char));
+	zn = (char*)malloc(M * sizeof(char));
+	if (te == NULL || tex == NULL || co1 == NULL || cox == NULL || co2 == NULL || zn == NULL) {
+		puts("Error of memory"); 
+		free(te);
+		free(co1);
+		free(cox);
+		free(co2);
+		free(zn);
+		free(tex);
+	}
+	else {
+		menu();
+		chitau(te, co1, co2);
+		n = strlen(te)-1;
+		oba(te, tex);
+		oba(co1,cox);
+		n = strlen(tex);
+		polnie(cox,n);
+		znaki(zn, n);
+		for (int i = 0; i < n; i++) {
+			if (tex[i] - cox[i] < 0)
+				zn[i] = '-';
+			tex[i] = abs(cox[i] - tex[i]);
+		}
+		polnie(co2, n);
+		itog = fopen("vivod.txt", "a");
+		for (int i = 0; i < n; i++, k += 2)
+			fprintf(itog, "%d%c%d, ", i + 1 + co2[k] - '0', zn[i], tex[i] + co2[k + 1] - '0');
+		fprintf(itog, "\n");
+		fclose(itog);
+		free(cox);
+		free(co2);
+		free(zn);
+		free(tex);
+	}
+	return 0;
+}
